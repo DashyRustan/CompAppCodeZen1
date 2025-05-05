@@ -1,0 +1,188 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="text-center">JRU Motorcycle Parking Reservation</h1>
+    <p class="text-center lead">Reserve your parking slot in advance and save time</p>
+</div>
+
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-primary text-white">
+                <h3 class="mb-0">Reservation Form</h3>
+            </div>
+            <div class="card-body">
+                <form id="reservationForm" action="{{ url_for('reserve') }}" method="POST" class="needs-validation" novalidate>
+                    <!-- Student Information Section -->
+                    <div class="form-section bg-light text-dark">
+                        <h4 class="mb-3">Student Information</h4>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="name" class="form-label">Full Name</label>
+                                <input type="text" class="form-control" id="name" name="name" required>
+                                <div class="invalid-feedback">
+                                    Please enter your full name.
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="year" class="form-label">Year Level</label>
+                                <select class="form-select" id="year" name="year" required>
+                                    <option value="">Select Year Level</option>
+                                    <option value="1st Year">1st Year</option>
+                                    <option value="2nd Year">2nd Year</option>
+                                    <option value="3rd Year">3rd Year</option>
+                                    <option value="4th Year">4th Year</option>
+                                    <option value="5th Year">5th Year</option>
+                                    <option value="Graduate">Graduate</option>
+                                </select>
+                                <div class="invalid-feedback">
+                                    Please select your year level.
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="program" class="form-label">Program/Course</label>
+                                <input type="text" class="form-control" id="program" name="program" required>
+                                <div class="invalid-feedback">
+                                    Please enter your program or course.
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="section" class="form-label">Section</label>
+                                <input type="text" class="form-control" id="section" name="section" required>
+                                <div class="invalid-feedback">
+                                    Please enter your section.
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <label for="email" class="form-label">Email Address</label>
+                                <input type="email" class="form-control" id="email" name="email" required>
+                                <div class="invalid-feedback">
+                                    Please enter a valid email address.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Motorcycle Details Section -->
+                    <div class="form-section bg-light text-dark mt-4">
+                        <h4 class="mb-3">Motorcycle Details</h4>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="motorcycle_description" class="form-label">Motorcycle Description</label>
+                                <textarea class="form-control" id="motorcycle_description" name="motorcycle_description" rows="3" placeholder="Brand, model, color, distinguishing features" required></textarea>
+                                <div class="invalid-feedback">
+                                    Please describe your motorcycle.
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="plate_number" class="form-label">Plate Number</label>
+                                <input type="text" class="form-control" id="plate_number" name="plate_number" required>
+                                <div class="invalid-feedback">
+                                    Please enter your motorcycle's plate number.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Reservation Time Section -->
+                    <div class="form-section bg-light text-dark mt-4">
+                        <h4 class="mb-3">Reservation Schedule</h4>
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label for="reservation_date" class="form-label">Date</label>
+                                <input type="date" class="form-control" id="reservation_date" name="reservation_date" required>
+                                <div class="invalid-feedback">
+                                    Please select a date.
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="start_time" class="form-label">Start Time</label>
+                                <input type="time" class="form-control" id="start_time" name="start_time" required>
+                                <div class="invalid-feedback">
+                                    Please select a start time.
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="end_time" class="form-label">End Time</label>
+                                <input type="time" class="form-control" id="end_time" name="end_time" required>
+                                <div class="invalid-feedback">
+                                    Please select an end time.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-12">
+                                <button id="searchSlots" class="btn btn-secondary">Find Available Slots</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Slot Selection Section (initially hidden) -->
+                    <div id="slotSelection" class="form-section bg-light text-dark mt-4 d-none">
+                        <h4 class="mb-3">Select Parking Slot</h4>
+                        <p>Click on an available slot to select it:</p>
+                        
+                        <div id="slotGrid" class="mb-4">
+                            <!-- Slots will be loaded here -->
+                        </div>
+                        
+                        <input type="hidden" id="slot_id" name="slot_id" required>
+                        
+                        <div id="selectedSlotDisplay" class="alert alert-info d-none">
+                            No slot selected
+                        </div>
+                        
+                        <div class="d-grid gap-2 col-md-6 mx-auto mt-4">
+                            <button type="submit" id="submitReservation" class="btn btn-primary btn-lg" disabled>
+                                Submit Reservation
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Reservation Guidelines -->
+        <div class="card shadow-sm">
+            <div class="card-header bg-info text-white">
+                <h4 class="mb-0">Reservation Guidelines</h4>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">Reservations must be made at least 1 hour in advance.</li>
+                    <li class="list-group-item">The minimum reservation duration is 30 minutes.</li>
+                    <li class="list-group-item">The maximum reservation duration is 8 hours.</li>
+                    <li class="list-group-item">Reservations are subject to admin approval.</li>
+                    <li class="list-group-item">Please arrive at least 10 minutes before your reservation time.</li>
+                    <li class="list-group-item">Inform the admin if you need to cancel your reservation.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    // Form validation
+    (() => {
+        'use strict'
+        
+        // Fetch all forms that need validation
+        const forms = document.querySelectorAll('.needs-validation')
+        
+        // Loop over them and prevent submission
+        Array.from(forms).forEach(form => {
+            form.addEventListener('submit', event => {
+                if (!form.checkValidity()) {
+                    event.preventDefault()
+                    event.stopPropagation()
+                }
+                
+                form.classList.add('was-validated')
+            }, false)
+        })
+    })()
+</script>
+{% endblock %}
